@@ -18,10 +18,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-/**
- * Created by khe11e on 2/5/17.
- */
-
 public class FileDownload {
 
     File destinationFile;
@@ -30,17 +26,18 @@ public class FileDownload {
     public void downloadImage(){
         RetrofitInterface downloadService = createService(RetrofitInterface.class, "https://assets.wired.com/photos/");
         downloadService.downloadFileByUrlRx("w_1032/wp-content/uploads/2016/01/nasa-risk-sts112-709-073k.jpg")
-                .flatMap(processResponse())
+                .flatMap(processResponse())     // flatMap transforms items emitted by Observable into Observables, then flattens these into single Observable object.
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(handleResult());
+                .observeOn(AndroidSchedulers.mainThread())      // when response returns, the onNext, onComplete, and onError methods are called on the mainThread.
+                .subscribe(handleResult());     // handleResult responds to the Observable's stream.
     }
 
+    // Create Retrofit adapter
     public <T> T createService(Class<T> serviceClass, String baseUrl){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(new OkHttpClient.Builder().build())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();     // Needed for returning an Observable
         return retrofit.create(serviceClass);
     }
 
@@ -55,6 +52,8 @@ public class FileDownload {
 
     private Observable<File> saveToDiskRx(final Response<ResponseBody> response){
         return Observable.create(new ObservableOnSubscribe<File>() {
+
+            // ObservableOnSubscribe must implement subscribe(ObservableEmitter<File>).
             @Override
             public void subscribe(ObservableEmitter<File> subscriber) throws Exception {
                 String filename = "RxImage1";
@@ -75,10 +74,11 @@ public class FileDownload {
         return new Observer<File>() {
             @Override
             public void onSubscribe(Disposable d) {
-                Log.i("OnSubscribe", "OnSubscribe");
+                Log.i("OnSubscribe", "Reached OnSubscribe step");
             }
 
             @Override
+            // Called when the REST call receives data.
             public void onNext(File file) {
                 Log.i("OnNext", "File downloaded to " + file.getAbsolutePath());
             }
@@ -86,12 +86,12 @@ public class FileDownload {
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
-                Log.e("Error", "Error " + e.getMessage());
+                Log.e("Error: ", "Error: " + e.getMessage());
             }
 
             @Override
             public void onComplete() {
-                Log.i("OnComplete", "onCompleted");
+                Log.i("OnComplete", "Reached onComplete step");
                 Log.i("FileSize (in bytes): ", Long.toString(destinationFile.length()));
             }
         };

@@ -9,6 +9,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button downloadImgBtn;
     public static String PACKAGE_NAME;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,11 +20,9 @@ public class MainActivity extends AppCompatActivity {
         downloadImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FileDownload file = new FileDownload();
-                file.downloadImage();
+                FileDownload fd = new FileDownload();
+                fd.downloadImage();
             }
         });
     }
-
-
 }

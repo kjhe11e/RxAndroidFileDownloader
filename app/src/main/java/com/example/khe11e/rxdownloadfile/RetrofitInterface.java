@@ -7,10 +7,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
-/**
- * Created by khe11e on 2/4/17.
- */
-
 public interface RetrofitInterface {
     // Regular Retrofit 2 GET request
     /*
