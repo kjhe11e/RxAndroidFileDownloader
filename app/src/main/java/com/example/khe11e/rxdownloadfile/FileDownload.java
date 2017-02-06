@@ -61,7 +61,7 @@ public class FileDownload {
                 destinationFile = new File("/data/data/" + PACKAGE_NAME + "/images/" + filename);
 
                 BufferedSink bufferedSink = Okio.buffer(Okio.sink(destinationFile));
-                bufferedSink.writeAll(response.body().source());
+                bufferedSink.writeAll(response.body().source());    // writeAll removes all bytes from source and appends them to this BufferedSink.
                 bufferedSink.close();
 
                 subscriber.onNext(destinationFile);
